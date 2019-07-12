@@ -1,0 +1,28 @@
+# Cylinder data
+0.3 1 0 0 0 0 0 1 0 2 1 0 1 0
+0.2 1.414 0 0 1 0.707 0 0.707 1 3 1 0 2 0
+0.1 1 1 0 2 1 0 0 2 0 1 0 3 0
+0.2 1.414 0 0 1 0 0.707 0.707 1 5 2 1 1 0
+0.1 1 0 1 2 0 1 0 4 0 2 1 2 0
+0.2 1.414 0 0 1 0 -0.707 0.707 1 7 3 1 1 0
+0.1 1 0 -1 2 0 -1 0 6 0 3 1 2 0
+0.2 1.414 0 0 1 -0.707 0 0.707 1 9 4 1 1 0
+0.1 1 -1 0 2 -1 0 0 8 0 4 1 2 0
+# Branch data
+0 0 491.8 3.414 0 1.333
+1 1 209.1 2.414 45.01 1.75
+1 1 209.1 2.414 45.01 1.75
+1 1 209.1 2.414 45.01 1.75
+# Tree data
+1.119 # Total volume
+0.4918 # Stem volume
+0.6273 # Branch volume
+2 # Tree height
+3.414 # Stem length
+7.242 # Branch length
+4 # Branch count
+1 # Maximum branch order
+11.51 # Total area
+0.4 # DBH from QSM
+0 # Cylinder fitting DBH
+0 0 0 # Tree start point
