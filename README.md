@@ -523,3 +523,78 @@ disp(QSM);
 %         twig_length_limits: [0.0200 0.0500]
 %                 compressed: 0
 ```
+
+### Model transformations.
+
+This example generates a specified number of copies of the example QSM and translates, rotates and scales the copies on the circumference of a circle of given radius. The result is visualized by plotting all models in a single figure.
+
+Basic parameters for generation. Number of models and circle radius.
+
+```Matlab
+% Number of transformed models.
+NModel = 10;
+
+% Radius of circle.
+rad = 15;
+```
+
+Generate transformation parameters.
+
+```Matlab
+% Generate angles of trees.
+ang = linspace(0, -2*pi, NModel + 1);
+ang = ang(1:end-1);
+
+% Generate scales of trees.
+sca = linspace(1, 3, NModel);
+
+% Convert polar coordinates to Cartesian for translation.
+[x, y, z] = pol2cart(...
+    ang, ...
+    repmat(rad, 1, NModel), ...
+    zeros(1, NModel) ...
+);
+
+% Collect components to single matrix.
+tra = [x(:), y(:), z(:)];
+
+% Convert angles to degrees.
+ang = rad2deg(ang);
+```
+
+Create the base model that is then transformed in a loop.
+
+```Matlab
+QSM = QSMBCylindrical('example');
+```
+
+Open figure and make sure it is cleared, because patch objects, do not seem to respect the hold status.
+
+```Matlab
+f = figure(1);
+
+clf(f);
+```
+
+Generate transformed models in loop and plot each transformed model in the current figure. Cylinder branch index is used for coloring as it separates individual branches well.
+
+```Matlab
+for iModel = 1:NModel
+
+    % Rotate by negative angle.
+    QSMi = QSM.rotate(-ang(iModel));
+
+    % Translate to circle circumference.
+    QSMi = QSMi.translate(tra(iModel,:));
+
+    % Scale by given factor.
+    QSMi = QSMi.scale(sca(iModel));
+
+    % Plot model and use coloring that highlights orientation.
+    QSMi.plot_model('ColorSource','CylinderBranchIndex');
+    hold on;
+
+end
+
+hold off;
+```
