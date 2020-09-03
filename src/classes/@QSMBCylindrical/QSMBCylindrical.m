@@ -449,6 +449,127 @@ classdef QSMBCylindrical < QSMB
 
         end
 
+        function ob = translate(ob, Delta)
+        % Move cylinder start points by given delta-vector.
+        
+            assert( ...
+                (size(Delta,1) == 1 && size(Delta,2) == 3) || ...
+                (size(Delta,1) == 3 && size(Delta,2) == 1), ...
+                'Translate vector must be a three-element vector.' ...
+            );
+
+            ob.cylinder_start_point(1:ob.block_count,:) = bsxfun( ...
+                @plus, ...
+                ob.cylinder_start_point(1:ob.block_count,:), ...
+                Delta ...
+            );
+
+        end
+
+        function ob = rotate(ob, ang, ax, mode)
+        % Rotate model around given axis by given angle. 
+        % 
+        % Inputs:
+        %
+        % ang       Angle of rotation in degrees.
+        %
+        % ax        Axis vector around which to rotate. z-axis by default.
+        %           When empty, default is used.
+        %
+        % mode      Rotation coordinate system: 
+        %
+        %           'local' [default]:  Rotate around base of the tree.
+        %           'global':           Rotate around world origin.
+        %
+
+            % Set default axis as z-axis.
+            if nargin < 3 || isempty(ax)
+                ax = [0, 0, 1];
+            end
+
+            if nargin < 4
+                mode = 'local';
+            end
+
+            % Convert degrees to radians.
+            ang = deg2rad(ang);
+
+            % Get rotation matrix. Angle in radians.
+            R = rotation_matrix(ax, ang);
+
+            switch mode
+                case 'local'
+
+                    % Temporary copy of start points.
+                    SP = ob.cylinder_start_point(1:ob.block_count,:);
+
+                    % Origin of tree, i.e., first start point.
+                    sp1 = SP(1,:);
+
+                    % Ensure points start from origin.
+                    SP = bsxfun(@minus, SP, sp1);
+
+                    % Scale start points by factor.
+                    SP = SP * R;
+
+                    % Move back to previous origin.
+                    SP = bsxfun(@plus, SP, sp1);
+
+                    % Replace data in object.
+                    ob.cylinder_start_point(1:ob.block_count,:) = SP;
+                case 'global'
+                    % Transform start points.
+                    ob.cylinder_start_point(1:ob.block_count,:) = ...
+                        ob.cylinder_start_point(1:ob.block_count,:) * R;
+                    %-
+                otherwise
+                    error(['Unknown rotate mode: "' mode '"']);
+            end
+
+            % Transform axes.
+            ob.cylinder_axis(1:ob.block_count,:) = ...
+                ob.cylinder_axis(1:ob.block_count,:) * R;
+            %-
+
+        end
+
+        function ob = scale(ob, s)
+        % Scale model by given factor.
+        %
+        % Inputs:
+        %
+        % s         Scaling factor.
+
+            % Transform start points.
+            ob.cylinder_radius(1:ob.block_count,:) = ...
+                ob.cylinder_radius(1:ob.block_count,:) * s;
+            %-
+
+            % Transform start points.
+            ob.cylinder_length(1:ob.block_count,:) = ...
+                ob.cylinder_length(1:ob.block_count,:) * s;
+            %-
+
+            % Temporary copy of start points.
+            SP = ob.cylinder_start_point(1:ob.block_count,:);
+
+            % Origin of tree, i.e., first start point.
+            sp1 = SP(1,:);
+
+            % Ensure points start from origin.
+            SP = bsxfun(@minus, SP, sp1);
+
+            % Scale start points by factor.
+            SP = SP.*s;
+
+            % Move back to previous origin.
+            SP = bsxfun(@plus, SP, sp1);
+
+            % Replace data in object.
+            ob.cylinder_start_point(1:ob.block_count,:) = SP;
+
+        end
+
         function Val = volume(ob, varargin)
         % Compute total or sub-volumes of the tree model. Without optional 
         % arguments the method returns total tree volume. The optional
@@ -1249,6 +1370,9 @@ classdef QSMBCylindrical < QSMB
 
                 % Get cube coordinates of voxels occupied by cylinder.
                 cc = ob.CylinderToVoxels(iCyl, edge, minp);
+                
+                cc = min(cc,BlockVoxelization.size);
+                cc = max(cc,[1 1 1]);
 
                 % Add cylinder index to occupied voxels.
                 BlockVoxelization.add_object_by_cc(cc,iCyl);

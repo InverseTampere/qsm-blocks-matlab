@@ -1,5 +1,12 @@
 # Changelog
 
+## 2020-09-03
+
+- Added transformation methods: translate, rotate, scale.
+	- These methods can be used to transform the tree model in the world space.
+	- Added an example for transformations in test.m file.
+- Fixed a bug in `QSMBCylindrical.toVoxels()` method which allowed cube coordinates to be out of voxelization bounds.
+
 ## 2019-07-12 Version 1.0.0
 
 - Initial release as a separate repository.
