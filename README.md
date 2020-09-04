@@ -598,3 +598,7 @@ end
 
 hold off;
 ```
+
+The resulting collection of QSM is visualized below in *transformation_example.png*. The 10 models are in a circular formation, growing in scale when moving clockwise along the circumference.
+
+![Transformation example](https://github.com/InverseTampere/qsm-blocks-matlab/raw/master/transformation_example.png)
